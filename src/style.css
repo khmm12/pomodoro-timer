@@ -1,0 +1,236 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/bricolage-grotesque";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Fonts and animations registered with Tailwind. Semantic colors are handled
+   as runtime CSS variables referenced directly from markup (see note below).
+--------------------------------------------------------------------------- */
+@theme {
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Geist Variable', sans-serif;
+
+  --animate-breathe: breathe 4s ease-in-out infinite;
+  --animate-enter-up: enter-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-enter-fade: enter-fade 900ms ease 600ms both;
+}
+
+/*
+  Semantic colors are runtime CSS variables (see :root / .dark / [data-phase]
+  below) referenced directly from markup via Tailwind's `text-(--accent)` /
+  `bg-(--surface)` custom-property syntax. They are intentionally NOT mapped
+  into `@theme` colors: a theme color whose value is a `var()` reference does
+  not register a utility reliably, and direct references cascade cleanly with
+  both the theme and the active phase.
+*/
+
+/* Theme surfaces — light/dark. */
+:root {
+  --bg: #f1efea;
+  --surface: #ffffff;
+  --text: #1b1b21;
+  --text-muted: #6c6c78;
+  --hairline: rgb(0 0 0 / 0.08);
+  --track: rgb(0 0 0 / 0.07);
+  --shadow-dark: rgb(40 38 50 / 0.16);
+  --shadow-light: rgb(255 255 255 / 0.9);
+  --glow-strength: 0.16;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0d0d11;
+  --surface: #181820;
+  --text: #f2f2f5;
+  --text-muted: #9595a2;
+  --hairline: rgb(255 255 255 / 0.09);
+  --track: rgb(255 255 255 / 0.06);
+  --shadow-dark: rgb(0 0 0 / 0.55);
+  --shadow-light: rgb(255 255 255 / 0.035);
+  --glow-strength: 0.26;
+  color-scheme: dark;
+}
+
+/* Phase accents — theme-independent, drive the ambient glow and the arc. */
+[data-phase="work"] {
+  --accent: #ff6b5e;
+  --accent-soft: #ff9c6f;
+  --accent-rgb: 255 107 94;
+}
+[data-phase="shortBreak"] {
+  --accent: #2dd4bf;
+  --accent-soft: #4ade80;
+  --accent-rgb: 45 212 191;
+}
+[data-phase="longBreak"] {
+  --accent: #8186f8;
+  --accent-soft: #a884f5;
+  --accent-rgb: 129 134 248;
+}
+
+@layer base {
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  :where(button, a, input):focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Custom utilities for the volumetric pieces that don't reduce cleanly to
+   stock utilities (layered neumorphic shadows, gradient depth, the arc glow).
+--------------------------------------------------------------------------- */
+@utility ambient {
+  background:
+    radial-gradient(62% 52% at 50% 36%, rgb(var(--accent-rgb) / var(--glow-strength)), transparent 72%),
+    var(--bg);
+  transition: background 800ms ease;
+}
+
+@utility dial-plate {
+  background: var(--surface);
+  box-shadow:
+    -14px -14px 30px var(--shadow-light),
+    16px 18px 38px var(--shadow-dark);
+  transition:
+    background 600ms ease,
+    box-shadow 600ms ease;
+}
+
+@utility dial-arc {
+  stroke: var(--accent);
+  transition:
+    stroke-dashoffset 280ms linear,
+    stroke 600ms ease;
+}
+
+/*
+  The accent glow lives on the <svg> element, not the arc. A `drop-shadow` set
+  directly on an SVG shape is realised via an SVG <filter> whose default region
+  is a rectangle, which clips the blur into a square halo. As a CSS filter on
+  the rasterised <svg>, the blur spills cleanly in the parent's space — a round
+  glow that follows the stroke's alpha.
+*/
+@utility dial-glow {
+  /* `overflow: visible` is essential: the SVG viewport's default `overflow:
+     hidden` clips the drop-shadow to its square box, producing a square halo. */
+  overflow: visible;
+  filter: drop-shadow(0 0 7px rgb(var(--accent-rgb) / 0.5));
+  transition: filter 600ms ease;
+}
+
+@utility dial-track {
+  stroke: var(--track);
+  transition: stroke 600ms ease;
+}
+
+@utility surface-card {
+  background: var(--surface);
+  box-shadow:
+    -8px -8px 20px var(--shadow-light),
+    10px 12px 28px var(--shadow-dark);
+}
+
+@utility section-label {
+  margin: 0 0 0.375rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+@utility btn-primary {
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+  color: #fff;
+  box-shadow:
+    0 12px 26px rgb(var(--accent-rgb) / 0.42),
+    inset 0 1px 0 rgb(255 255 255 / 0.45);
+  transition:
+    transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 280ms ease,
+    background 600ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 16px 32px rgb(var(--accent-rgb) / 0.5),
+      inset 0 1px 0 rgb(255 255 255 / 0.45);
+  }
+  &:active {
+    transform: translateY(1px) scale(0.985);
+    box-shadow:
+      0 6px 14px rgb(var(--accent-rgb) / 0.4),
+      inset 0 1px 0 rgb(255 255 255 / 0.3);
+  }
+}
+
+@utility btn-ghost {
+  color: var(--text-muted);
+  background: transparent;
+  transition:
+    color 200ms ease,
+    background 200ms ease,
+    transform 160ms ease;
+
+  &:hover {
+    color: var(--text);
+    background: var(--hairline);
+  }
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.012);
+  }
+}
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

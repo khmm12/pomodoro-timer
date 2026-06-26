@@ -1,0 +1,21 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Local tooling
+.claude/settings.local.json
+
+# Vite / PWA
+dev-dist
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
