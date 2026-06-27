@@ -124,8 +124,8 @@ function onKeydown(event: KeyboardEvent): void {
               :class="settings[alert.key] ? 'bg-accent' : 'bg-track'"
             >
               <span
-                class="absolute left-[0.2rem] top-[0.2rem] h-[1.2rem] w-[1.2rem] rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.3)] transition-transform duration-200 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]"
-                :class="settings[alert.key] ? 'translate-x-[1.1rem]' : 'translate-x-0'"
+                class="absolute left-[0.2rem] top-1/2 h-[1.2rem] w-[1.2rem] -translate-y-1/2 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.3)] transition-transform duration-200 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]"
+                :class="settings[alert.key] ? 'translate-x-[1.15rem]' : 'translate-x-0'"
               />
             </span>
           </button>
@@ -138,8 +138,8 @@ function onKeydown(event: KeyboardEvent): void {
               v-for="option in themeOptions"
               :key="option.value"
               type="button"
-              class="rounded-[0.65rem] border-none bg-transparent p-2 text-[0.88rem] transition-colors duration-200"
-              :class="mode === option.value ? 'bg-surface text-foreground shadow-[0_1px_4px_rgb(0_0_0/0.12)]' : 'text-muted'"
+              class="rounded-[0.65rem] border-none p-2 text-[0.88rem] transition-colors duration-200"
+              :class="mode === option.value ? 'bg-surface-raised text-foreground shadow-[inset_0_0_0_1px_var(--hairline),0_1px_8px_var(--shadow-dark)]' : 'bg-transparent text-muted'"
               @click="setMode(option.value)"
             >
               {{ option.label }}

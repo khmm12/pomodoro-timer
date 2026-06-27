@@ -46,11 +46,12 @@ sound + system-notification alerts, and reload-survival.
 - **Vapor:** components use `<script setup vapor>`. The whole tree is Vapor —
   no VDOM interop. Composition API only.
 - **Styling is Tailwind-first.** Write utilities in markup. Semantic colors are
-  runtime CSS variables (`--accent`, `--surface`, `--text`, …) referenced with
-  Tailwind's custom-property syntax: `text-(--accent)`, `bg-(--surface)`. Do NOT
-  map these into `@theme` colors — a theme color whose value is a `var()` does
-  not register a utility reliably. Phase accent + light/dark tokens live in
-  `src/style.css` under `[data-phase]` / `:root` / `.dark`. Genuinely complex
+  defined as CSS custom properties in `src/style.css` (`:root` / `.dark` /
+  `[data-phase]`) and exposed as Tailwind utilities via `@theme inline` — e.g.
+  `--color-surface: var(--surface)` → `bg-surface`, `text-foreground`. Use the
+  plain utility names (`bg-surface`, `text-accent`), not the raw var syntax
+  (`bg-(--surface)`). When adding a new semantic color, register it in both the
+  `:root`/`.dark` blocks and the `@theme inline` block. Genuinely complex
   volumetric pieces (dial shadows, button gradients, the arc glow) are defined
   once as `@utility` in `src/style.css`.
 - **Animations are pure CSS** (no `<Transition>`), so they don't depend on

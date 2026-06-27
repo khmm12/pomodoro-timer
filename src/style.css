@@ -49,6 +49,7 @@
 :root {
   --canvas: var(--palette-paper);
   --surface: var(--palette-white);
+  --surface-raised: var(--palette-white);
   --foreground: var(--palette-ink);
   --muted: var(--palette-slate);
   --hairline: rgb(0 0 0 / 0.08);
@@ -62,6 +63,7 @@
 .dark {
   --canvas: var(--palette-night);
   --surface: var(--palette-panel);
+  --surface-raised: rgb(255 255 255 / 0.12);
   --foreground: var(--palette-mist);
   --muted: var(--palette-steel);
   --hairline: rgb(255 255 255 / 0.09);
@@ -96,6 +98,7 @@
 @theme inline {
   --color-canvas: var(--canvas);
   --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-hairline: var(--hairline);

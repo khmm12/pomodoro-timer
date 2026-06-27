@@ -21,7 +21,7 @@ const primaryLabel = computed(() => (props.isRunning ? 'Pause' : props.isIdle ? 
 
     <button
       type="button"
-      class="btn-primary flex min-w-[9.5rem] items-center justify-center gap-2.5 rounded-full px-10 py-4 text-[1.05rem] font-semibold"
+      class="btn-primary flex min-w-38 items-center justify-center gap-2.5 rounded-full px-10 py-4 text-[1.05rem] font-semibold"
       @click="$emit('toggle')"
     >
       <BaseIcon :name="isRunning ? 'pause' : 'play'" :size="24" />
