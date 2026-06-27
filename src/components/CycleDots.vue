@@ -12,7 +12,7 @@ const dots = computed(() => Array.from({ length: props.total }, (_, i) => i < pr
       v-for="(active, i) in dots"
       :key="i"
       class="h-2 w-2 rounded-full transition-all duration-300"
-      :class="active ? 'bg-(--accent) scale-[1.18]' : 'bg-(--track)'"
+      :class="active ? 'bg-accent scale-[1.18]' : 'bg-track'"
     />
   </div>
 </template>
