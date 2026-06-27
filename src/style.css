@@ -5,8 +5,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------
-   Fonts and animations registered with Tailwind. Semantic colors are handled
-   as runtime CSS variables referenced directly from markup (see note below).
+   Non-color theme tokens (fonts, animations). Semantic colors are mapped into
+   Tailwind's color namespace via `@theme inline` further down.
 --------------------------------------------------------------------------- */
 @theme {
   --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
@@ -17,34 +17,55 @@
   --animate-enter-fade: enter-fade 900ms ease 600ms both;
 }
 
-/*
-  Semantic colors are runtime CSS variables (see :root / .dark / [data-phase]
-  below) referenced directly from markup via Tailwind's `text-(--accent)` /
-  `bg-(--surface)` custom-property syntax. They are intentionally NOT mapped
-  into `@theme` colors: a theme color whose value is a `var()` reference does
-  not register a utility reliably, and direct references cascade cleanly with
-  both the theme and the active phase.
-*/
-
-/* Theme surfaces — light/dark. */
+/* ---------------------------------------------------------------------------
+   Tier 1 — primitive palette. Raw, semantics-free color values. Kept as plain
+   custom properties (NOT in `@theme`) so they don't generate utilities; only
+   the semantic tokens below are exposed as Tailwind colors.
+--------------------------------------------------------------------------- */
 :root {
-  --bg: #f1efea;
-  --surface: #ffffff;
-  --text: #1b1b21;
-  --text-muted: #6c6c78;
+  --palette-paper: #f1efea;
+  --palette-white: #ffffff;
+  --palette-ink: #1b1b21;
+  --palette-slate: #6c6c78;
+
+  --palette-night: #0d0d11;
+  --palette-panel: #181820;
+  --palette-mist: #f2f2f5;
+  --palette-steel: #9595a2;
+
+  --palette-coral: #ff6b5e;
+  --palette-coral-soft: #ff9c6f;
+  --palette-teal: #2dd4bf;
+  --palette-green: #4ade80;
+  --palette-indigo: #8186f8;
+  --palette-violet: #a884f5;
+}
+
+/* ---------------------------------------------------------------------------
+   Tier 2 — semantic tokens, light/dark. They reference the palette; the
+   alpha overlays (hairline, track, shadows) stay as direct rgb() — they are
+   compositing overlays, not palette colors.
+--------------------------------------------------------------------------- */
+:root {
+  --canvas: var(--palette-paper);
+  --surface: var(--palette-white);
+  --surface-raised: var(--palette-white);
+  --foreground: var(--palette-ink);
+  --muted: var(--palette-slate);
   --hairline: rgb(0 0 0 / 0.08);
   --track: rgb(0 0 0 / 0.07);
   --shadow-dark: rgb(40 38 50 / 0.16);
   --shadow-light: rgb(255 255 255 / 0.9);
-  --glow-strength: 0.16;
+  --glow-strength: 0.38;
   color-scheme: light;
 }
 
 .dark {
-  --bg: #0d0d11;
-  --surface: #181820;
-  --text: #f2f2f5;
-  --text-muted: #9595a2;
+  --canvas: var(--palette-night);
+  --surface: var(--palette-panel);
+  --surface-raised: rgb(255 255 255 / 0.12);
+  --foreground: var(--palette-mist);
+  --muted: var(--palette-steel);
   --hairline: rgb(255 255 255 / 0.09);
   --track: rgb(255 255 255 / 0.06);
   --shadow-dark: rgb(0 0 0 / 0.55);
@@ -55,19 +76,35 @@
 
 /* Phase accents — theme-independent, drive the ambient glow and the arc. */
 [data-phase="work"] {
-  --accent: #ff6b5e;
-  --accent-soft: #ff9c6f;
-  --accent-rgb: 255 107 94;
+  --accent: var(--palette-coral);
+  --accent-soft: var(--palette-coral-soft);
 }
 [data-phase="shortBreak"] {
-  --accent: #2dd4bf;
-  --accent-soft: #4ade80;
-  --accent-rgb: 45 212 191;
+  --accent: var(--palette-teal);
+  --accent-soft: var(--palette-green);
 }
 [data-phase="longBreak"] {
-  --accent: #8186f8;
-  --accent-soft: #a884f5;
-  --accent-rgb: 129 134 248;
+  --accent: var(--palette-indigo);
+  --accent-soft: var(--palette-violet);
+}
+
+/* ---------------------------------------------------------------------------
+   Map the semantic tokens into Tailwind's color namespace. `inline` keeps the
+   `var()` reference in the generated utilities instead of resolving it at
+   theme-build time — so `bg-surface` / `text-accent` cascade cleanly with the
+   active theme and phase. This is the canonical Tailwind v4 pattern for
+   runtime-swappable colors.
+--------------------------------------------------------------------------- */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-track: var(--track);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
 }
 
 @layer base {
@@ -80,7 +117,7 @@
   body {
     margin: 0;
     font-family: var(--font-sans);
-    color: var(--text);
+    color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -95,11 +132,12 @@
 /* ---------------------------------------------------------------------------
    Custom utilities for the volumetric pieces that don't reduce cleanly to
    stock utilities (layered neumorphic shadows, gradient depth, the arc glow).
+   Accent translucency uses relative-color syntax `rgb(from var(--accent) …)`.
 --------------------------------------------------------------------------- */
 @utility ambient {
   background:
-    radial-gradient(62% 52% at 50% 36%, rgb(var(--accent-rgb) / var(--glow-strength)), transparent 72%),
-    var(--bg);
+    radial-gradient(62% 52% at 50% 36%, rgb(from var(--accent) r g b / var(--glow-strength)), transparent 72%),
+    var(--canvas);
   transition: background 800ms ease;
 }
 
@@ -131,7 +169,7 @@
   /* `overflow: visible` is essential: the SVG viewport's default `overflow:
      hidden` clips the drop-shadow to its square box, producing a square halo. */
   overflow: visible;
-  filter: drop-shadow(0 0 7px rgb(var(--accent-rgb) / 0.5));
+  filter: drop-shadow(0 0 7px rgb(from var(--accent) r g b / 0.5));
   transition: filter 600ms ease;
 }
 
@@ -143,8 +181,8 @@
 @utility surface-card {
   background: var(--surface);
   box-shadow:
-    -8px -8px 20px var(--shadow-light),
-    10px 12px 28px var(--shadow-dark);
+    -4px -4px 10px var(--shadow-light),
+    5px 7px 14px var(--shadow-dark);
 }
 
 @utility section-label {
@@ -152,14 +190,14 @@
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--muted);
 }
 
 @utility btn-primary {
   background: linear-gradient(180deg, var(--accent-soft), var(--accent));
   color: #fff;
   box-shadow:
-    0 12px 26px rgb(var(--accent-rgb) / 0.42),
+    0 12px 26px rgb(from var(--accent) r g b / 0.42),
     inset 0 1px 0 rgb(255 255 255 / 0.45);
   transition:
     transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -169,19 +207,19 @@
   &:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 16px 32px rgb(var(--accent-rgb) / 0.5),
+      0 16px 32px rgb(from var(--accent) r g b / 0.5),
       inset 0 1px 0 rgb(255 255 255 / 0.45);
   }
   &:active {
     transform: translateY(1px) scale(0.985);
     box-shadow:
-      0 6px 14px rgb(var(--accent-rgb) / 0.4),
+      0 6px 14px rgb(from var(--accent) r g b / 0.4),
       inset 0 1px 0 rgb(255 255 255 / 0.3);
   }
 }
 
 @utility btn-ghost {
-  color: var(--text-muted);
+  color: var(--muted);
   background: transparent;
   transition:
     color 200ms ease,
@@ -189,7 +227,7 @@
     transform 160ms ease;
 
   &:hover {
-    color: var(--text);
+    color: var(--foreground);
     background: var(--hairline);
   }
   &:active {

@@ -67,7 +67,7 @@ function onKeydown(event: KeyboardEvent): void {
       aria-label="Settings"
     >
       <header class="mb-4 flex items-center justify-between">
-        <h2 class="font-display text-(--text) m-0 text-xl font-bold">Settings</h2>
+        <h2 class="font-display text-foreground m-0 text-xl font-bold">Settings</h2>
         <button
           type="button"
           class="btn-ghost flex h-[2.4rem] w-[2.4rem] items-center justify-center rounded-full"
@@ -82,7 +82,7 @@ function onKeydown(event: KeyboardEvent): void {
         <div class="flex flex-col gap-1">
           <p class="section-label">Durations</p>
           <div v-for="field in numberFields" :key="field.key" class="flex items-center justify-between py-2">
-            <span class="text-(--text) text-[0.96rem]">{{ field.label }}</span>
+            <span class="text-foreground text-[0.96rem]">{{ field.label }}</span>
             <div class="inline-flex items-center gap-1.5">
               <button
                 type="button"
@@ -92,8 +92,8 @@ function onKeydown(event: KeyboardEvent): void {
               >
                 –
               </button>
-              <span class="text-(--text) min-w-[4.4rem] text-center font-semibold tabular-nums">
-                {{ settings[field.key] }}<span class="text-(--text-muted) ml-1 text-[0.78rem] font-normal">{{ field.unit }}</span>
+              <span class="text-foreground min-w-[4.4rem] text-center font-semibold tabular-nums">
+                {{ settings[field.key] }}<span class="text-muted ml-1 text-[0.78rem] font-normal">{{ field.unit }}</span>
               </span>
               <button
                 type="button"
@@ -118,14 +118,14 @@ function onKeydown(event: KeyboardEvent): void {
             :aria-checked="settings[alert.key]"
             @click="toggle(alert.key)"
           >
-            <span class="text-(--text) text-[0.96rem]">{{ alert.label }}</span>
+            <span class="text-foreground text-[0.96rem]">{{ alert.label }}</span>
             <span
               class="relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200"
-              :class="settings[alert.key] ? 'bg-(--accent)' : 'bg-(--track)'"
+              :class="settings[alert.key] ? 'bg-accent' : 'bg-track'"
             >
               <span
-                class="absolute left-[0.2rem] top-[0.2rem] h-[1.2rem] w-[1.2rem] rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.3)] transition-transform duration-200 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]"
-                :class="settings[alert.key] ? 'translate-x-[1.1rem]' : 'translate-x-0'"
+                class="absolute left-[0.2rem] top-1/2 h-[1.2rem] w-[1.2rem] -translate-y-1/2 rounded-full bg-white shadow-[0_1px_3px_rgb(0_0_0/0.3)] transition-transform duration-200 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]"
+                :class="settings[alert.key] ? 'translate-x-[1.15rem]' : 'translate-x-0'"
               />
             </span>
           </button>
@@ -133,13 +133,13 @@ function onKeydown(event: KeyboardEvent): void {
 
         <div class="flex flex-col gap-1">
           <p class="section-label">Appearance</p>
-          <div class="bg-(--track) grid grid-cols-3 gap-1 rounded-[0.9rem] p-1">
+          <div class="bg-track grid grid-cols-3 gap-1 rounded-[0.9rem] p-1">
             <button
               v-for="option in themeOptions"
               :key="option.value"
               type="button"
-              class="rounded-[0.65rem] border-none bg-transparent p-2 text-[0.88rem] transition-colors duration-200"
-              :class="mode === option.value ? 'bg-(--surface) text-(--text) shadow-[0_1px_4px_rgb(0_0_0/0.12)]' : 'text-(--text-muted)'"
+              class="rounded-[0.65rem] border-none p-2 text-[0.88rem] transition-colors duration-200"
+              :class="mode === option.value ? 'bg-surface-raised text-foreground shadow-[inset_0_0_0_1px_var(--hairline),0_1px_8px_var(--shadow-dark)]' : 'bg-transparent text-muted'"
               @click="setMode(option.value)"
             >
               {{ option.label }}
