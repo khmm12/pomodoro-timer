@@ -55,7 +55,7 @@
   --track: rgb(0 0 0 / 0.07);
   --shadow-dark: rgb(40 38 50 / 0.16);
   --shadow-light: rgb(255 255 255 / 0.9);
-  --glow-strength: 0.16;
+  --glow-strength: 0.38;
   color-scheme: light;
 }
 
@@ -178,8 +178,8 @@
 @utility surface-card {
   background: var(--surface);
   box-shadow:
-    -8px -8px 20px var(--shadow-light),
-    10px 12px 28px var(--shadow-dark);
+    -4px -4px 10px var(--shadow-light),
+    5px 7px 14px var(--shadow-dark);
 }
 
 @utility section-label {
