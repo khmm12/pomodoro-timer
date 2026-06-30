@@ -114,6 +114,31 @@
     height: 100%;
   }
 
+  /*
+    The ambient background lives on the root <html> element: a root background is
+    painted directly across the whole viewport canvas — safe-area insets and the
+    scroll-overflow strip body's box wouldn't reach. Solid `--canvas` is an
+    explicit `background-color` with the glow as a separate `background-image`:
+    iOS 26 Safari's Liquid Glass ignores `theme-color` and tints its floating bars
+    by sampling the page's background colour at the edges, so the bottom bar lands
+    on plain canvas. `no-repeat` stops the glow tiling a second band near the
+    bottom once the page overflows. --accent comes from the data-phase attribute
+    App.vue sets on documentElement — defined on the same element the background
+    reads it from.
+  */
+  html {
+    background-color: var(--canvas);
+    background-image: radial-gradient(
+      62% 52% at 50% 36%,
+      rgb(from var(--accent) r g b / var(--glow-strength)),
+      transparent 72%
+    );
+    background-repeat: no-repeat;
+    transition:
+      background-color 800ms ease,
+      background-image 800ms ease;
+  }
+
   body {
     margin: 0;
     font-family: var(--font-sans);
@@ -134,13 +159,6 @@
    stock utilities (layered neumorphic shadows, gradient depth, the arc glow).
    Accent translucency uses relative-color syntax `rgb(from var(--accent) …)`.
 --------------------------------------------------------------------------- */
-@utility ambient {
-  background:
-    radial-gradient(62% 52% at 50% 36%, rgb(from var(--accent) r g b / var(--glow-strength)), transparent 72%),
-    var(--canvas);
-  transition: background 800ms ease;
-}
-
 @utility dial-plate {
   background: var(--surface);
   box-shadow:

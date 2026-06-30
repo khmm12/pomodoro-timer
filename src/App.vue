@@ -1,5 +1,5 @@
 <script setup vapor lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import AppFooter from './components/AppFooter.vue'
 import AppLogo from './components/AppLogo.vue'
 import BaseIcon from './components/BaseIcon.vue'
@@ -32,10 +32,17 @@ const settingsOpen = ref(false)
 const PHASE_LABELS = { work: 'Focus', shortBreak: 'Short Break', longBreak: 'Long Break' } as const
 const phaseLabel = computed(() => PHASE_LABELS[phase.value])
 const statusLabel = computed(() => (isPaused.value ? 'Paused' : isIdle.value ? 'Ready' : ''))
+
+// Drive the phase accent from <html> so the ambient background on <body> (which
+// extends under the iOS safe-area / status bar) inherits --accent. Mirrors how
+// useTheme syncs the `.dark` class onto documentElement.
+watchEffect(() => {
+  document.documentElement.dataset.phase = phase.value
+})
 </script>
 
 <template>
-  <div class="ambient flex min-h-screen flex-col" :data-phase="phase">
+  <div class="flex min-h-screen flex-col">
     <header class="flex items-center justify-between px-5 py-5 sm:px-8">
       <AppLogo class="animate-enter-up" />
       <div class="flex items-center gap-1">
